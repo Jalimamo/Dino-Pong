@@ -122,8 +122,41 @@ def calculate_fitness(genome, game, start_time):
 
 # region TODO (E) Player vs. NEAT
 def play_against_ai(genome, game, config):
-    # TODO (E) Player vs. NEAT
-    pass
+    print("We play against AI")
+    run = True
+    clock = pygame.time.Clock()
+    network = neat.nn.FeedForwardNetwork.create(genome, config)
+    while run:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+                break
+
+        keys = pygame.key.get_pressed()
+        game.move_paddle_keys(keys, True, True)
+
+        # Move Ball
+        game.ball.move()
+
+        # Handle collision
+        game.handle_collision()
+
+        # move_partner(game.left_paddle, game.ball)
+        # move_partner(game.right_paddle, game.ball)
+
+        # move_paddle_network(game, network, game.right_paddle, False)
+        # Reset ball if it touches the right or left window border and update the score board.
+
+        if game.ball.x < 0:
+            game.right_score = game.right_score + 1
+            game.ball.reset()
+        elif game.ball.x > WIN_WIDTH:
+            game.left_score = game.left_score + 1
+            game.ball.reset()
+
+        # Update game screen
+        game.draw()
 
 
 if __name__ == "__main__":
@@ -138,13 +171,15 @@ if __name__ == "__main__":
     config_path = os.path.join(local_dir, "parameter.txt")
     configuration = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                 neat.DefaultStagnation, config_path)
+
+    max_generations = 20
     if train:
+        FPS = 999999999999
         pygame.display.set_caption("Training Mode")
-        max_generations = 1000
 
         # Generate initial population. Switch commented lines to start with a new population or load a saved checkpoint.
         # population = neat.Population(configuration)
-        population = neat.Checkpointer.restore_checkpoint('Checkpoints/checkpoint-85')
+        population = neat.Checkpointer.restore_checkpoint('Checkpoints/checkpoint-213')
 
         # Add statistics observer and checkpoints
         population.add_reporter(neat.StdOutReporter(True))
@@ -159,9 +194,23 @@ if __name__ == "__main__":
 
     else:
         pygame.display.set_caption("Single Player Mode")
-        # Load the opponent
-        opponent_path = "Networks/Partner.pickle"
-        opponent = load_network_from_file(opponent_path)
+        Error_Exists = True
+        while Error_Exists:
+            try:
+                gen = int(input("Which generation do you want to load? (0 for the newest)")) # 124 ist bisher die beste
+                if gen != 0:
+                    population = neat.Checkpointer.restore_checkpoint(f'Checkpoints/checkpoint-{gen}')
+                    print("lol")
+                    opponent = population.run(evaluate_genomes, max_generations)
+                else:
+                    pygame.display.set_caption("Single Player Mode")
+                    # Load the opponent
+                    opponent_path = "Networks/Winner.pickle"
+                    opponent = load_network_from_file(opponent_path)
+                Error_Exists = False
+            except (ValueError, IOError) as error:
+                print(error)
+
 
         # Start game
         pong = Game(window)

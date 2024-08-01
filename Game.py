@@ -3,11 +3,13 @@ import time
 
 import pygame
 
+import Powerups
 import dino
 import BirdGame
 from Paddle import Paddle
 from Ball import Ball
 from Settings import *
+from Powerups import Powerups
 
 #pygame.init()
 
@@ -34,6 +36,12 @@ class Game:
             self.bird_game = BirdGame.Bird_Game(window)
             self.bird_paddle = Paddle(window, self.bird_game.bird.rect.x, self.bird_game.bird.rect.y, (253, 253, 253))
 
+        if ENABLED_POWERUPS:
+            self.powerups = Powerups()
+            self.powerups_active = False
+            self.powerups_visible = False
+            self.last_powerup_time = time.time()
+
     def draw(self):
         # This is our central draw method. If we want to display something on the screen, we have to add it in here.
         self.frame_count += 1
@@ -49,14 +57,18 @@ class Game:
             # Fill the background with an image you can specify in the Settings.py file.
             self.window.blit(BG_IMG, (0, 0))
 
-        if DINO1:
-            self.dino_game.draw()
         if BIRD:
             self.bird_game.draw()
+        if DINO1:
+            self.dino_game.draw()
         if DINO2:
             self.inverted_dino_game.draw()
             # Draw the dividing lines in the middle
         self.draw_divider()
+
+        if POWERUPS_ENABLED and self.powerups_visible:
+            if time.time() - self.last_powerup_time > POWERUP_DISPLAY_TIME:
+                self.powerups.draw()
 
         # TODO Paddle (1) Draw the paddles
         self.left_paddle.draw()
@@ -72,6 +84,7 @@ class Game:
         if BIRD:
             self.bird_paddle.x = self.bird_game.bird.rect.x
             self.bird_paddle.y = self.bird_game.bird.rect.y
+            # self.bird_paddle.draw()
 
         # TODO Ball (3) Draw the ball
         self.ball.draw()
@@ -96,7 +109,7 @@ class Game:
 
     # TODO Paddle (2) Move the paddles
     #   They should respond to key presses.
-    def move_paddle_keys(self, keys):
+    def move_paddle_keys(self, keys, left, right):
         # TODO: define "up" and "down" keys for left and right paddle
         left_paddle_up_key = pygame.K_w
         left_paddle_down_key = pygame.K_s
@@ -110,18 +123,18 @@ class Game:
             bird_reset = pygame.K_b
 
         # Move left paddle upwards with w and downwards with s
-        if keys[left_paddle_up_key]:
+        if keys[left_paddle_up_key] and left:
             upwards = True  # TODO: True or False?
             self.left_paddle.move(upwards)
-        if keys[left_paddle_down_key]:
+        if keys[left_paddle_down_key] and left:
             upwards = False  # TODO: True or False?
             self.left_paddle.move(upwards)
 
         # Move right paddle upwards with up arrow and downwards with down arrow
-        if keys[right_paddle_up_key]:
+        if keys[right_paddle_up_key] and right:
             upwards = True  # TODO: True or False?
             self.right_paddle.move(upwards)
-        if keys[right_paddle_down_key]:
+        if keys[right_paddle_down_key] and right:
             upwards = False  # TODO: True or False?
             self.right_paddle.move(upwards)
 
@@ -151,6 +164,8 @@ class Game:
     # region TODO (6) Collision detection
     # TODO Ball (6) Collision detection
     def handle_collision(self):
+        if POWERUPS_ENABLED and self.powerups_visible and self.ball_hits_powerup():
+            self.handle_powerup_collision()
         if self.ball_hits_ceiling_or_floor():
             self.ball.y_vel *= -1
 
@@ -192,15 +207,22 @@ class Game:
                 return False
         if BIRD:
             if paddle == self.bird_paddle:
-                if pygame.Rect(paddle.x, paddle.y, paddle.dino_rect.width, paddle.dino_rect.height).collidepoint(self.ball.x, self.ball.y) and ANIMAL_COLLISION:
+                if pygame.Rect(paddle.x, paddle.y, paddle.bird_rect.width, paddle.bird_rect.height).collidepoint(self.ball.x, self.ball.y) and ANIMAL_COLLISION:
                     return True
                     pass
                 return False
 
-
         if pygame.Rect(paddle.x, paddle.y, PADDLE_WIDTH, PADDLE_HEIGHT).collidepoint(self.ball.x, self.ball.y):
             return True
         return False
+
+    def ball_hits_powerup(self):
+        return pygame.Rect(self.powerups.x, self.powerups.y, POWERUP_SIZE, POWERUP_SIZE).collidepoint(self.ball.x, self.ball.y)
+
+    def handle_powerup_collision(self):
+        self.powerups.activate(self)
+        self.powerups_active = True
+        self.hide_powerups()
 
     def handle_paddle_collision(self, paddle):
         # Reverse direction
@@ -274,3 +296,12 @@ class Game:
                 self.right_paddle.move(False)
 
     # endregion
+    def hide_powerups(self):
+        self.powerups_visible = False
+        self.last_powerup_time = time.time()
+
+    def spawn_powerup(self):
+        self.powerups_active = False
+        self.powerups_visible = True
+        self.last_powerup_time = time.time()
+

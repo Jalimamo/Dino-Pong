@@ -12,7 +12,7 @@ class Paddle:
             self.dino_image = pygame.image.load('img/Dino.png').convert_alpha()
             self.dino_rect = self.dino_image.get_rect()
         elif self.color == (253, 253, 253):
-            self.bird_image = pygame.transform.scale_by(pygame.image.load('img/Bird.png').convert_alpha(), BIRD_SCALE)
+            self.bird_image = pygame.transform.scale_by(pygame.image.load('img/bird.png').convert_alpha(), BIRD_SCALE)
             self.bird_rect = self.bird_image.get_rect()
 
 

@@ -55,10 +55,11 @@ class FastBall:
         self.ball_speedup = 5
 
     def activate(self, game):
+        game.ball.change_speed(self.ball_speedup)
         # TODO: make game.ball faster
-        pass
 
     def deactivate(self, game):
+        game.ball.change_speed(-self.ball_speedup)
         # TODO: restore the original speed of game.ball
         pass
 
@@ -85,7 +86,7 @@ def get_random_powerup():
 
     for powerup in ENABLED_POWERUPS:
         # Add case distinctions for custom powerups
-        if powerup == "FastBall":
+        if True: #powerup == "FastBall":
             powerups.append(FastBall())
         elif powerup == "FastPaddle":
             powerups.append(FastPaddle())

@@ -29,7 +29,7 @@ class Ball:
         self.y += self.y_vel
         # TODO Ball (4) Move the ball
         #  How can we move the ball? Hint: We need a separate velocity in x and y direction.
-        if self.y < 5 or self.y > WIN_HEIGHT -5:
+        if self.y < BALL_UNSTUCK_BORDER or self.y > WIN_HEIGHT - BALL_UNSTUCK_BORDER:
             if self.border_time == -1:
                 self.border_time = time.time()
             else:
@@ -57,5 +57,12 @@ class Ball:
 
     # Used for powerups
     def change_speed(self, delta):
-        # Change the speed of the ball in x and y direction by the specified delta
-        pass
+        if self.x_vel < 0:
+            self.x_vel -= delta
+        else:
+            self.x_vel += delta
+
+        if self.y_vel < 0:
+            self.y_vel -= delta
+        else:
+            self.y_vel += delta

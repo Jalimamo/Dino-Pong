@@ -7,7 +7,7 @@ pygame.init()
 
 # Game Settings
 WIN_WIDTH, WIN_HEIGHT = 900, 600
-FPS = 600000000
+FPS = 600000000000
 FONT = pygame.font.SysFont("comicsans", 50)
 WINNING_SCORE = 3
 
@@ -25,19 +25,20 @@ MAGENTA = (255, 0, 255)
 BG_IMG = None
 
 # Paddle Settings
-PADDLE_VEL =7
+PADDLE_VEL = 7
 PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
 
 # Ball Settings
 BALL_MAX_VEL = 7
 BALL_RADIUS = 7
+BALL_UNSTUCK_BORDER = 10
 
 # Powerup Settings
 POWERUPS_ENABLED = True
 POWERUP_SIZE = BALL_RADIUS * 7
-POWERUP_SPAWN_DELAY = 10_000
-POWERUP_DISPLAY_TIME = 15_000
+POWERUP_SPAWN_DELAY = 10
+POWERUP_DISPLAY_TIME = 15
 POWERUP_DURATION = 10_000
 # POWERUP_BG_IMG = pygame.transform.scale(pygame.image.load(os.path.join("img", "Powerup.png")), (POWERUP_SIZE, POWERUP_SIZE))
 POWERUP_BG_IMG = None
@@ -48,8 +49,10 @@ ENABLED_POWERUPS = [
 ]
 
 DINO1 = False
-DINO2 = True
+DINO2 = False
 BIRD = False
 ANIMAL_COLLISION = False
 
 BIRD_SCALE = 0.1
+PIPE_SCALE = 0.2
+PIPE_COUNT = 3
