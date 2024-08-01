@@ -39,10 +39,10 @@ class Dino:
             else:
                 self.jump_speed = -60
 
-    def update(self):
+    def update(self, mpf):
         if self.is_jumping:
-            self.jump_speed += self.gravity
-            self.rect.y += self.jump_speed
+            self.jump_speed += self.gravity * mpf
+            self.rect.y += self.jump_speed * mpf
             if self.inverted:
                 if self.rect.y <= INVERTED_GROUND:
                     self.rect.y = INVERTED_GROUND
@@ -89,8 +89,8 @@ class Obstacle:
         else:
             self.rect.y = GROUND - self.rect.height
 
-    def update(self):
-        self.rect.x -= self.speed
+    def update(self, mpf):
+        self.rect.x -= self.speed * mpf
         if self.inverted:
             if self.rect.x > WIN_WIDTH:
                 self.randomize_size()
@@ -120,7 +120,7 @@ class Dino_Game:
         self.font = pygame.font.SysFont(None, 36)
         self.game_over = False
 
-    def run(self):
+    def run(self, mpf):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -132,9 +132,9 @@ class Dino_Game:
                     self.__init__(self.screen)  # Neustart des Spiels
 
         if not self.game_over:
-            self.dino.update()
+            self.dino.update(mpf)
             for obstacle in self.obstacles:
-                obstacle.update()
+                obstacle.update(mpf)
                 if self.dino.rect.colliderect(obstacle.rect):
                     self.game_over = True
 

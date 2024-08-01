@@ -56,9 +56,6 @@ class Game:
         else:
             # Fill the background with an image you can specify in the Settings.py file.
             self.window.blit(BG_IMG, (0, 0))
-
-        if BIRD:
-            self.bird_game.draw()
         if DINO1:
             self.dino_game.draw()
         if DINO2:
@@ -94,6 +91,10 @@ class Game:
         self.draw_text(str(self.right_score), WIN_WIDTH - 60, WIN_HEIGHT - 90)
         self.draw_text(f"FPS:{self.fps}", WIN_WIDTH / 2, WIN_HEIGHT / 2, RED)
 
+
+        if BIRD:
+            self.bird_game.draw()
+
         # We have to call this one to make sure our drawings get displayed.
         pygame.display.update()
 
@@ -109,7 +110,7 @@ class Game:
 
     # TODO Paddle (2) Move the paddles
     #   They should respond to key presses.
-    def move_paddle_keys(self, keys, left, right):
+    def move_paddle_keys(self, keys, left, right, mpf):
         # TODO: define "up" and "down" keys for left and right paddle
         left_paddle_up_key = pygame.K_w
         left_paddle_down_key = pygame.K_s
@@ -125,18 +126,18 @@ class Game:
         # Move left paddle upwards with w and downwards with s
         if keys[left_paddle_up_key] and left:
             upwards = True  # TODO: True or False?
-            self.left_paddle.move(upwards)
+            self.left_paddle.move(upwards, mpf)
         if keys[left_paddle_down_key] and left:
             upwards = False  # TODO: True or False?
-            self.left_paddle.move(upwards)
+            self.left_paddle.move(upwards, mpf)
 
         # Move right paddle upwards with up arrow and downwards with down arrow
         if keys[right_paddle_up_key] and right:
             upwards = True  # TODO: True or False?
-            self.right_paddle.move(upwards)
+            self.right_paddle.move(upwards, mpf)
         if keys[right_paddle_down_key] and right:
             upwards = False  # TODO: True or False?
-            self.right_paddle.move(upwards)
+            self.right_paddle.move(upwards, mpf)
 
         if DINO1:
             if pygame.mouse.get_pressed()[0]:
@@ -155,11 +156,11 @@ class Game:
                 self.bird_game.__init__(self.window)
 
         if DINO1:
-            self.dino_game.run()
+            self.dino_game.run(mpf)
         if DINO2:
-            self.inverted_dino_game.run()
+            self.inverted_dino_game.run(mpf)
         if BIRD:
-            self.bird_game.run()
+            self.bird_game.run(mpf)
 
     # region TODO (6) Collision detection
     # TODO Ball (6) Collision detection

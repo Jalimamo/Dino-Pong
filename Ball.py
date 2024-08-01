@@ -24,9 +24,9 @@ class Ball:
         #  Which shape has a ball and how can we draw it?
         pygame.draw.circle(self.window, self.color, (int(self.x), int(self.y)), self.radius)
 
-    def move(self):
-        self.x += self.x_vel
-        self.y += self.y_vel
+    def move(self, mpf):
+        self.x += self.x_vel * mpf
+        self.y += self.y_vel * mpf
         # TODO Ball (4) Move the ball
         #  How can we move the ball? Hint: We need a separate velocity in x and y direction.
         if self.y < BALL_UNSTUCK_BORDER or self.y > WIN_HEIGHT - BALL_UNSTUCK_BORDER:

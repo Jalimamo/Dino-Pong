@@ -27,16 +27,17 @@ class Bird:
     def jump(self):
         self.velocity = self.jump_speed
 
-    def update(self):
-        self.velocity += self.gravity
-        self.rect.y += self.velocity
+    def update(self, mpf):
+        self.velocity += self.gravity * mpf
+        self.rect.y += self.velocity * mpf
 
     def draw(self, screen):
-        screen.blit(self.image, self.rect.topleft)
+        # screen.blit(self.image, self.rect.topleft)
+        pygame.draw.rect(screen, WHITE, self.rect)
 
 # Hindernis-Klasse
 class Pipe:
-    def __init__(self, x, gap_size=200):
+    def __init__(self, x, gap_size=400):
         self.image = pygame.transform.scale_by(pygame.image.load('img/pipe.png').convert_alpha(), PIPE_SCALE)
         self.stem_image = pygame.transform.scale_by(pygame.image.load('img/pipe_stem.png').convert_alpha(), PIPE_SCALE)
         self.gap_size = gap_size
@@ -52,20 +53,20 @@ class Pipe:
         self.rect_bottom.y = height + self.gap_size
         self.rect_bottom.height = WIN_HEIGHT - self.rect_bottom.y
 
-    def update(self):
-        self.rect_top.x -= 5
-        self.rect_bottom.x -= 5
+    def update(self, mpf):
+        self.rect_top.x -= 5 * mpf
+        self.rect_bottom.x -= 5 * mpf
         if self.rect_top.x < -self.rect_top.width:
             self.rect_top.x = self.rect_bottom.x = WIN_WIDTH
             self.set_height()
 
     def draw(self, screen):
         pipe_height = pygame.image.load('img/pipe.png').get_height() * PIPE_SCALE
-        screen.blit(pygame.transform.flip(self.image, False, True), (self.rect_top.left, self.rect_top.bottom - pipe_height))
+        # screen.blit(pygame.transform.flip(self.image, False, True), (self.rect_top.left, self.rect_top.bottom - pipe_height))
         for i in range(0, int(self.rect_top.bottom - pipe_height), self.stem_image.get_height()):
             screen.blit(self.stem_image, (self.rect_top.x, i))
 
-        screen.blit(self.image, self.rect_bottom.topleft)
+        # screen.blit(self.image, self.rect_bottom.topleft)
         for i in range(self.rect_bottom.y + self.image.get_height(), WIN_HEIGHT, self.stem_image.get_height()):
             screen.blit(self.stem_image, (self.rect_bottom.x, i))
 
@@ -83,7 +84,7 @@ class Bird_Game:
         self.font = pygame.font.SysFont(None, 36)
         self.game_over = False
 
-    def run(self):
+    def run(self, mpf):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and not self.game_over:
@@ -92,9 +93,9 @@ class Bird_Game:
                     self.__init__(self.screen)  # Neustart des Spiels
 
         if not self.game_over:
-            self.bird.update()
+            self.bird.update(mpf)
             for pipe in self.pipes:
-                pipe.update()
+                pipe.update(mpf)
                 if self.bird.rect.colliderect(pipe.rect_top) or self.bird.rect.colliderect(pipe.rect_bottom):
                     self.game_over = True
             if self.bird.rect.top <= 0 or self.bird.rect.bottom >= WIN_HEIGHT:
@@ -114,12 +115,12 @@ class Bird_Game:
             # pygame.draw.rect(self.screen, WHITE, pipe.rect_bottom)
 
         # Punktestand anzeigen
-        score_text = self.font.render(f'Score: {self.score}', True, WHITE)
-        self.screen.blit(score_text, (WIDTH // 4, (HEIGHT // 2 ) + 30))
+        # score_text = self.font.render(f'Score: {self.score}', True, WHITE)
+        # self.screen.blit(score_text, (WIDTH // 4, (HEIGHT // 2 ) + 30))
 
-        if self.game_over:
-            game_over_text = self.font.render('Game Over! Press B to Restart', True, WHITE)
-            self.screen.blit(game_over_text, (WIDTH // 4, HEIGHT // 2))
+        # if self.game_over:
+        #     game_over_text = self.font.render('Game Over! Press B to Restart', True, WHITE)
+        #     self.screen.blit(game_over_text, (WIDTH // 4, HEIGHT // 2))
 
 if __name__ == "__main__":
     game = Bird_Game(screen)

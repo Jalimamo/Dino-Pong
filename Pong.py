@@ -12,7 +12,8 @@ if __name__ == "__main__":
     run = True
     clock = pygame.time.Clock()  # The clock helps us to limit the upper frame rate.
     while run:
-        clock.tick(FPS)
+        ms_frame = clock.tick(FPS)
+        mpf = SPEED_MULTIPLIER * ms_frame / 1000 #mpf = move per frame
         game.draw()
 
         # This for loop is responsible for closing the window if we click on the red close button.
@@ -24,10 +25,10 @@ if __name__ == "__main__":
         # TODO Paddle (2) Move the paddles
         #  Sense the currently pressed key and move the paddle up or down.
         keys = pygame.key.get_pressed()
-        game.move_paddle_keys(keys, True, True)
+        game.move_paddle_keys(keys, True, True, mpf)
 
         # TODO Ball (4) Move the ball
-        game.ball.move()
+        game.ball.move(mpf)
 
         # TODO Ball (6) Collision detection
         game.handle_collision()

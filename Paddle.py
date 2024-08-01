@@ -26,18 +26,18 @@ class Paddle:
         else:
             pygame.draw.rect(self.window, self.color, (self.x, self.y, PADDLE_WIDTH, PADDLE_HEIGHT))
 
-    def move(self, upwards):
+    def move(self, upwards, mpf):
         if upwards:
-            new_pos = self.y + PADDLE_VEL
+            new_pos = self.y + (PADDLE_VEL * mpf)
             min_pos = 0
             if new_pos < min_pos:
                 self.y = min_pos
             else:
-                self.y -= PADDLE_VEL
+                self.y -= PADDLE_VEL * mpf
         else:
-            new_pos = self.y - PADDLE_VEL
+            new_pos = self.y - (PADDLE_VEL * mpf)
             min_pos = WIN_HEIGHT - PADDLE_HEIGHT
             if new_pos > min_pos:
                 self.y = min_pos
             else:
-                self.y += PADDLE_VEL
+                self.y += PADDLE_VEL * mpf

@@ -6,8 +6,9 @@ import pygame
 pygame.init()
 
 # Game Settings
-WIN_WIDTH, WIN_HEIGHT = 900, 600
-FPS = 600000000000
+WIN_WIDTH, WIN_HEIGHT = 1500, 1000
+FPS = 60
+SPEED_MULTIPLIER = 70
 FONT = pygame.font.SysFont("comicsans", 50)
 WINNING_SCORE = 3
 
@@ -48,11 +49,12 @@ ENABLED_POWERUPS = [
     "FastPaddle",
 ]
 
-DINO1 = False
-DINO2 = False
-BIRD = False
-ANIMAL_COLLISION = False
 
-BIRD_SCALE = 0.1
-PIPE_SCALE = 0.2
-PIPE_COUNT = 3
+DINO1 = True
+DINO2 = True
+BIRD = True
+ANIMAL_COLLISION = True
+
+BIRD_SCALE = 4
+PIPE_SCALE = 1
+PIPE_COUNT = 1
