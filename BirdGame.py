@@ -32,25 +32,25 @@ class Bird:
         self.rect.y += self.velocity * mpf
 
     def draw(self, screen):
-        # screen.blit(self.image, self.rect.topleft)
-        pygame.draw.rect(screen, WHITE, self.rect)
+        screen.blit(self.image, self.rect.topleft)
+        # pygame.draw.rect(screen, WHITE, self.rect)
 
 # Hindernis-Klasse
 class Pipe:
-    def __init__(self, x, gap_size=400):
+    def __init__(self, x,):
         self.image = pygame.transform.scale_by(pygame.image.load('img/pipe.png').convert_alpha(), PIPE_SCALE)
         self.stem_image = pygame.transform.scale_by(pygame.image.load('img/pipe_stem.png').convert_alpha(), PIPE_SCALE)
-        self.gap_size = gap_size
         self.rect_top = self.image.get_rect()
         self.rect_bottom = self.image.get_rect()
         self.rect_top.x = self.rect_bottom.x = x
         self.set_height()
+        self.gave_points = False
 
     def set_height(self):
-        height = random.randint(50, HEIGHT - self.gap_size - 50)
+        height = random.randint(50, HEIGHT - GAP_SIZE - 50)
         self.rect_top.y = 0
         self.rect_top.height = height
-        self.rect_bottom.y = height + self.gap_size
+        self.rect_bottom.y = height + GAP_SIZE
         self.rect_bottom.height = WIN_HEIGHT - self.rect_bottom.y
 
     def update(self, mpf):
@@ -59,14 +59,15 @@ class Pipe:
         if self.rect_top.x < -self.rect_top.width:
             self.rect_top.x = self.rect_bottom.x = WIN_WIDTH
             self.set_height()
+            self.gave_points = False
 
     def draw(self, screen):
         pipe_height = pygame.image.load('img/pipe.png').get_height() * PIPE_SCALE
-        # screen.blit(pygame.transform.flip(self.image, False, True), (self.rect_top.left, self.rect_top.bottom - pipe_height))
+        screen.blit(pygame.transform.flip(self.image, False, True), (self.rect_top.left, self.rect_top.bottom - pipe_height))
         for i in range(0, int(self.rect_top.bottom - pipe_height), self.stem_image.get_height()):
             screen.blit(self.stem_image, (self.rect_top.x, i))
 
-        # screen.blit(self.image, self.rect_bottom.topleft)
+        screen.blit(self.image, self.rect_bottom.topleft)
         for i in range(self.rect_bottom.y + self.image.get_height(), WIN_HEIGHT, self.stem_image.get_height()):
             screen.blit(self.stem_image, (self.rect_bottom.x, i))
 
@@ -103,8 +104,9 @@ class Bird_Game:
 
             # Score update
             for pipe in self.pipes:
-                if pipe.rect_top.right < self.bird.rect.left < pipe.rect_top.right + 5:
+                if pipe.rect_top.right < self.bird.rect.left and not pipe.gave_points:
                     self.score += 1
+                    pipe.gave_points = True
 
 
     def draw(self):
@@ -115,12 +117,12 @@ class Bird_Game:
             # pygame.draw.rect(self.screen, WHITE, pipe.rect_bottom)
 
         # Punktestand anzeigen
-        # score_text = self.font.render(f'Score: {self.score}', True, WHITE)
-        # self.screen.blit(score_text, (WIDTH // 4, (HEIGHT // 2 ) + 30))
+        score_text = self.font.render(f'Score: {self.score}', True, WHITE)
+        self.screen.blit(score_text, (WIDTH // 4, (HEIGHT // 2 ) + 30))
 
-        # if self.game_over:
-        #     game_over_text = self.font.render('Game Over! Press B to Restart', True, WHITE)
-        #     self.screen.blit(game_over_text, (WIDTH // 4, HEIGHT // 2))
+        if self.game_over:
+            game_over_text = self.font.render('Game Over! Press B to Restart', True, WHITE)
+            self.screen.blit(game_over_text, (WIDTH // 4, HEIGHT // 2))
 
 if __name__ == "__main__":
     game = Bird_Game(screen)
